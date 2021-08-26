@@ -6,15 +6,23 @@ import (
 	"monkey/lexer"
 	"monkey/token"
 )
+//Pratt Parser
+type (
+	prefixParseFn func() ast.Expression
+	infixParseFn func(expression ast.Expression)  ast.Expression
+)
 
 type Parser struct {
 	l *lexer.Lexer
+	errors []string
 
 	curToken token.Token
 	peekToken token.Token
 
-	errors []string
+	prefixParseFns map[token.TokenType]prefixParseFn
+	infixParseFns map[token.TokenType]infixParseFn
 }
+
 
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{
@@ -24,6 +32,14 @@ func New(l *lexer.Lexer) *Parser {
 	p.nextToken()
 	p.nextToken()
 	return p
+}
+
+func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
+	p.prefixParseFns[tokenType] = fn
+}
+
+func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
+	p.infixParseFns[tokenType] = fn
 }
 
 func (p *Parser) nextToken() {

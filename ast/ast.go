@@ -122,5 +122,8 @@ func (es *ExpressionStatement) TokenLiteral() string {
 }
 
 func (es *ExpressionStatement) String() string {
-	return es.Expression.String()
+	if es.Expression != nil {
+		return es.Expression.String()
+	}
+	return "";
 }

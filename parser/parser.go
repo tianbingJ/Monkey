@@ -51,6 +51,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.LET:
 		return p.parseLetStatement()
+	case token.RETURN:
+		return p.parseReturnStatement()
 	}
 	return nil
 }
@@ -72,6 +74,19 @@ func (p *Parser) parseLetStatement() *ast.LetStatment {
 	}
 
 	//TODO  跳过表达式，直到分号
+	for !p.curTokenIs(token.SEMICON) {
+		p.nextToken()
+	}
+	return stmt
+}
+
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
+	stmt := &ast.ReturnStatement{
+		Token: p.curToken,
+	}
+	p.nextToken()
+
+	//TODO 跳过expression
 	for !p.curTokenIs(token.SEMICON) {
 		p.nextToken()
 	}
